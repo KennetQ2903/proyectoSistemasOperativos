@@ -70,6 +70,11 @@ public class AppController extends Application {
     }
 
     private void createRectangles() {
+        rectanglesA.clear();
+        rectanglesB.clear();
+        rectanglesC.clear();
+        rectanglesD.clear();
+
         String carrilAVal = carrilA.getText();
         String carrilBVal = carrilB.getText();
         String carrilCVal = carrilC.getText();
@@ -134,6 +139,7 @@ public class AppController extends Application {
             alert.setHeaderText(null);
             alert.setContentText("Ingrese una cadena valida (e.j. 1, 0, 0, 1)");
             alert.showAndWait();
+            return;
         }
         if (!validateLength()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -141,6 +147,7 @@ public class AppController extends Application {
             alert.setHeaderText(null);
             alert.setContentText("La cadena debe tener máximo 10 elementos separados por comas");
             alert.showAndWait();
+            return;
         }
         createRectangles();
         startTasks();
@@ -174,6 +181,7 @@ public class AppController extends Application {
             protected Void call() throws Exception {
                 try {
                     semaphore.acquire(); // Intenta adquirir el semáforo
+                    startButton.setDisable(true);
                     for (Rectangle car : list) {
                         car.setX(x);
                         car.setY(y);
@@ -186,6 +194,7 @@ public class AppController extends Application {
                         Thread.sleep(20); // Simula un retardo
                         Platform.runLater(() -> panel.getChildren().remove(car));
                     }
+                    startButton.setDisable(false);
                     return null;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -203,6 +212,7 @@ public class AppController extends Application {
             protected Void call() throws Exception {
                 try {
                     semaphore.acquire(); // Intenta adquirir el semáforo
+                    startButton.setDisable(true);
                     for (Rectangle car : list) {
                         car.setX(x);
                         car.setY(y);
@@ -215,6 +225,7 @@ public class AppController extends Application {
                         Thread.sleep(20); // Simula un retardo
                         Platform.runLater(() -> panel.getChildren().remove(car));
                     }
+                    startButton.setDisable(false);
                     return null;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
