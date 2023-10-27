@@ -1,5 +1,8 @@
 package com.kennet.sistemasoperativos.proyectosistemasoperativos;
 
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -8,17 +11,18 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Semaphore;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AppController {
+public class AppController extends Application {
 
-
+    Semaphore semaphore = new Semaphore(1);
     List<Rectangle> rectanglesA = new ArrayList<>();
     List<Rectangle> rectanglesB = new ArrayList<>();
     List<Rectangle> rectanglesC = new ArrayList<>();
@@ -51,7 +55,7 @@ public class AppController {
         return matcherA.matches() && matcherB.matches() && matcherC.matches() && matcherD.matches();
     }
 
-    private boolean validateLength(){
+    private boolean validateLength() {
         String carrilAVal = carrilA.getText();
         String carrilBVal = carrilB.getText();
         String carrilCVal = carrilC.getText();
@@ -65,7 +69,7 @@ public class AppController {
         return elementsA && elementsB && elementsC && elementsD;
     }
 
-    private void createRectangles(){
+    private void createRectangles() {
         String carrilAVal = carrilA.getText();
         String carrilBVal = carrilB.getText();
         String carrilCVal = carrilC.getText();
@@ -76,8 +80,8 @@ public class AppController {
         String[] elementsD = carrilDVal.replaceAll("\\s", "").split(",");
 
 
-        for(String e : elementsA){
-            if(Objects.equals(e, "1")){
+        for (String e : elementsA) {
+            if (Objects.equals(e, "1")) {
                 Rectangle rectangle = new Rectangle(50, 50, 50, 50);
                 rectangle.setArcWidth(5.0);
                 rectangle.setArcHeight(5.0);
@@ -87,34 +91,34 @@ public class AppController {
                 rectanglesA.add(rectangle);
             }
         }
-        for(String e : elementsB){
-            if(Objects.equals(e, "1")){
+        for (String e : elementsB) {
+            if (Objects.equals(e, "1")) {
                 Rectangle rectangle = new Rectangle(50, 50, 50, 50);
                 rectangle.setArcWidth(5.0);
                 rectangle.setArcHeight(5.0);
-                rectangle.setFill(Color.DODGERBLUE);
+                rectangle.setFill(Color.RED);
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
                 rectanglesB.add(rectangle);
             }
         }
-        for(String e : elementsC){
-            if(Objects.equals(e, "1")){
+        for (String e : elementsC) {
+            if (Objects.equals(e, "1")) {
                 Rectangle rectangle = new Rectangle(50, 50, 50, 50);
                 rectangle.setArcWidth(5.0);
                 rectangle.setArcHeight(5.0);
-                rectangle.setFill(Color.DODGERBLUE);
+                rectangle.setFill(Color.GREENYELLOW);
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
                 rectanglesC.add(rectangle);
             }
         }
-        for(String e : elementsD){
-            if(Objects.equals(e, "1")){
+        for (String e : elementsD) {
+            if (Objects.equals(e, "1")) {
                 Rectangle rectangle = new Rectangle(50, 50, 50, 50);
                 rectangle.setArcWidth(5.0);
                 rectangle.setArcHeight(5.0);
-                rectangle.setFill(Color.DODGERBLUE);
+                rectangle.setFill(Color.YELLOW);
                 rectangle.setStroke(Color.BLACK);
                 rectangle.setStrokeType(StrokeType.INSIDE);
                 rectanglesD.add(rectangle);
@@ -139,5 +143,144 @@ public class AppController {
             alert.showAndWait();
         }
         createRectangles();
+        startTasks();
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+
+    }
+
+    private void startTasks() {
+        Task<Void> taskA = createTaskA(318, 16, 452, rectanglesA);
+        Task<Void> taskB = createTaskB(620, 449, 318, rectanglesB);
+        Task<Void> taskC = createTaskC(318, 855, 452, rectanglesC);
+        Task<Void> taskD = createTaskD(16, 449, 318, rectanglesD);
+
+        Thread threadA = new Thread(taskA);
+        Thread threadB = new Thread(taskB);
+        Thread threadC = new Thread(taskC);
+        Thread threadD = new Thread(taskD);
+
+        threadA.start();
+        threadB.start();
+        threadC.start();
+        threadD.start();
+    }
+
+    private Task<Void> createTaskA(int x, int y, int end, List<Rectangle> list) {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    for (Rectangle car : list) {
+                        car.setX(x);
+                        car.setY(y);
+                        Platform.runLater(() -> panel.getChildren().add(car));
+                        for (int i = y; i <= end; i++) {
+                            Thread.sleep(10); // Simula un retardo
+                            int finalI = i;
+                            Platform.runLater(() -> car.setY(finalI));
+                        }
+                        Thread.sleep(20); // Simula un retardo
+                        Platform.runLater(() -> panel.getChildren().remove(car));
+                    }
+                    return null;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
+                }
+                return null;
+            }
+        };
+    }
+
+    private Task<Void> createTaskB(int x, int y, int end, List<Rectangle> list) {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    for (Rectangle car : list) {
+                        car.setX(x);
+                        car.setY(y);
+                        Platform.runLater(() -> panel.getChildren().add(car));
+                        for (int i = x; i >= end; i--) {
+                            Thread.sleep(10); // Simula un retardo
+                            int finalI = i;
+                            Platform.runLater(() -> car.setX(finalI));
+                        }
+                        Thread.sleep(20); // Simula un retardo
+                        Platform.runLater(() -> panel.getChildren().remove(car));
+                    }
+                    return null;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
+                }
+                return null;
+            }
+        };
+    }
+
+    private Task<Void> createTaskC(int x, int y, int end, List<Rectangle> list) {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    for (Rectangle car : list) {
+                        car.setX(x);
+                        car.setY(y);
+                        Platform.runLater(() -> panel.getChildren().add(car));
+                        for (int i = y; i >= end; i--) {
+                            Thread.sleep(10); // Simula un retardo
+                            int finalI = i;
+                            Platform.runLater(() -> car.setY(finalI));
+                        }
+                        Thread.sleep(20); // Simula un retardo
+                        Platform.runLater(() -> panel.getChildren().remove(car));
+                    }
+                    return null;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
+                }
+                return null;
+            }
+        };
+    }
+
+    private Task<Void> createTaskD(int x, int y, int end, List<Rectangle> list) {
+        return new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    for (Rectangle car : list) {
+                        car.setX(x);
+                        car.setY(y);
+                        Platform.runLater(() -> panel.getChildren().add(car));
+                        for (int i = x; i <= end; i++) {
+                            Thread.sleep(10); // Simula un retardo
+                            int finalI = i;
+                            Platform.runLater(() -> car.setX(finalI));
+                        }
+                        Thread.sleep(20); // Simula un retardo
+                        Platform.runLater(() -> panel.getChildren().remove(car));
+                    }
+                    return null;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
+                }
+                return null;
+            }
+        };
     }
 }
