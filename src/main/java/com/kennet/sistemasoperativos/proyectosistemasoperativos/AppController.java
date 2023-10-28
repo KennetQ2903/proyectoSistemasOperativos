@@ -180,10 +180,9 @@ public class AppController extends Application {
             @Override
             protected Void call() throws Exception {
                 try {
-                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    semaphore.acquireUninterruptibly(); // Intenta adquirir el semáforo
                     startButton.setDisable(true);
-                    List<Rectangle> firstFiveElements = list.subList(0, Math.min(5, list.size()));
-                    for (Rectangle car : firstFiveElements) {
+                    for (Rectangle car : list) {
                         car.setX(x);
                         car.setY(y);
                         Platform.runLater(() -> panel.getChildren().add(car));
@@ -210,7 +209,7 @@ public class AppController extends Application {
             @Override
             protected Void call() throws Exception {
                 try {
-                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    semaphore.acquireUninterruptibly(); // Intenta adquirir el semáforo
                     startButton.setDisable(true);
                     for (Rectangle car : list) {
                         car.setX(x);
@@ -239,7 +238,7 @@ public class AppController extends Application {
             @Override
             protected Void call() throws Exception {
                 try {
-                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    semaphore.acquireUninterruptibly(); // Intenta adquirir el semáforo
                     startButton.setDisable(true);
                     for (Rectangle car : list) {
                         car.setX(x);
@@ -268,7 +267,7 @@ public class AppController extends Application {
             @Override
             protected Void call() throws Exception {
                 try {
-                    semaphore.acquire(); // Intenta adquirir el semáforo
+                    semaphore.acquireUninterruptibly(); // Intenta adquirir el semáforo
                     startButton.setDisable(true);
                     for (Rectangle car : list) {
                         car.setX(x);
