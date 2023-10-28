@@ -182,12 +182,13 @@ public class AppController extends Application {
                 try {
                     semaphore.acquire(); // Intenta adquirir el semáforo
                     startButton.setDisable(true);
-                    for (Rectangle car : list) {
+                    List<Rectangle> firstFiveElements = list.subList(0, Math.min(5, list.size()));
+                    for (Rectangle car : firstFiveElements) {
                         car.setX(x);
                         car.setY(y);
                         Platform.runLater(() -> panel.getChildren().add(car));
                         for (int i = y; i <= end; i++) {
-                            Thread.sleep(10); // Simula un retardo
+                            Thread.sleep(5); // Simula un retardo
                             int finalI = i;
                             Platform.runLater(() -> car.setY(finalI));
                         }
@@ -195,11 +196,9 @@ public class AppController extends Application {
                         Platform.runLater(() -> panel.getChildren().remove(car));
                     }
                     startButton.setDisable(false);
-                    return null;
+                    semaphore.release();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } finally {
-                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
                 }
                 return null;
             }
@@ -218,7 +217,7 @@ public class AppController extends Application {
                         car.setY(y);
                         Platform.runLater(() -> panel.getChildren().add(car));
                         for (int i = x; i >= end; i--) {
-                            Thread.sleep(10); // Simula un retardo
+                            Thread.sleep(5); // Simula un retardo
                             int finalI = i;
                             Platform.runLater(() -> car.setX(finalI));
                         }
@@ -226,11 +225,9 @@ public class AppController extends Application {
                         Platform.runLater(() -> panel.getChildren().remove(car));
                     }
                     startButton.setDisable(false);
-                    return null;
+                    semaphore.release();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } finally {
-                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
                 }
                 return null;
             }
@@ -243,23 +240,23 @@ public class AppController extends Application {
             protected Void call() throws Exception {
                 try {
                     semaphore.acquire(); // Intenta adquirir el semáforo
+                    startButton.setDisable(true);
                     for (Rectangle car : list) {
                         car.setX(x);
                         car.setY(y);
                         Platform.runLater(() -> panel.getChildren().add(car));
                         for (int i = y; i >= end; i--) {
-                            Thread.sleep(10); // Simula un retardo
+                            Thread.sleep(5); // Simula un retardo
                             int finalI = i;
                             Platform.runLater(() -> car.setY(finalI));
                         }
                         Thread.sleep(20); // Simula un retardo
                         Platform.runLater(() -> panel.getChildren().remove(car));
                     }
-                    return null;
+                    startButton.setDisable(false);
+                    semaphore.release();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } finally {
-                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
                 }
                 return null;
             }
@@ -272,23 +269,23 @@ public class AppController extends Application {
             protected Void call() throws Exception {
                 try {
                     semaphore.acquire(); // Intenta adquirir el semáforo
+                    startButton.setDisable(true);
                     for (Rectangle car : list) {
                         car.setX(x);
                         car.setY(y);
                         Platform.runLater(() -> panel.getChildren().add(car));
                         for (int i = x; i <= end; i++) {
-                            Thread.sleep(10); // Simula un retardo
+                            Thread.sleep(5); // Simula un retardo
                             int finalI = i;
                             Platform.runLater(() -> car.setX(finalI));
                         }
                         Thread.sleep(20); // Simula un retardo
                         Platform.runLater(() -> panel.getChildren().remove(car));
                     }
-                    return null;
+                    startButton.setDisable(false);
+                    semaphore.release();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } finally {
-                    semaphore.release(); // Libera el semáforo, permitiendo que otros hilos lo adquieran
                 }
                 return null;
             }
